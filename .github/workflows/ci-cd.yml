@@ -1,0 +1,77 @@
+# .github/workflows/ci-cd.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Fetches entire history for SonarCloud to analyze changed lines
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Or your project's Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Tests (Optional but recommended)
+        # If you have unit tests, run them here.
+        # Example: `npm test` or `npm run test -- --coverage`
+        # For coverage to be sent to SonarCloud, configure Jest/Vite test reporter to output a Cobertura XML or LCOV file.
+        # Example for Jest: `jest --ci --json --outputFile="test-results.json" --coverage --coverageReporters=lcov`
+        # Then add the `sonar.javascript.lcov.reportPaths=coverage/lcov.info` property in SonarScanner.
+        run: echo "No tests configured for now." # Replace with actual test command if you have one
+
+      - name: Build React App
+        # This generates the production build, which SonarQube can analyze for potential issues.
+        run: npm run build
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2.2.0 # Use the latest version
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # This retrieves the token from GitHub Secrets
+        with:
+          # Configure project properties directly in the action if not using sonar-project.properties file
+          args: >
+            -Dsonar.projectKey=your_sonarcloud_project_key
+            -Dsonar.organization=your_sonarcloud_organization_key
+            -Dsonar.sources=.
+            -Dsonar.projectVersion=1.0.0
+            -Dsonar.sourceEncoding=UTF-8
+            # Properties specific for JavaScript/TypeScript projects:
+            -Dsonar.typescript.tsconfigPath=./tsconfig.json # Path to your tsconfig.json if applicable
+            -Dsonar.exclusions=**/node_modules/**,**/*.test.tsx,**/*.test.ts,**/*.js,**/*.jsx,build/**,dist/** # Exclude generated/test files
+            # If you have test coverage reports, uncomment and adjust the path:
+            # -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            # -Dsonar.test.inclusions=**/*.test.tsx,**/*.test.ts # Include test files for analysis (optional)
+
+      # --- Subsequent steps for Docker Build & Push, and Deployment would go here ---
+      # For example, to build and push the Docker image:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }} # Or DOCKER_PASSWORD
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: your_docker_username/campus-connect-insight:latest # Replace with your Docker Hub username
+          cache-from: type=gha # Use GitHub Actions cache for faster builds
+          cache-to: type=gha,mode=max # Cache layers for future builds
