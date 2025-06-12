@@ -1,11 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, ExternalLink, Code, Building, BookOpen } from 'lucide-react';
+import { ArrowLeft, Code, Building, BookOpen } from 'lucide-react';
+import ProjectCard from '@/components/ProjectCard';
+import CompanyCard from '@/components/CompanyCard';
+import LeetCodeCard from '@/components/LeetCodeCard';
+import EmptyState from '@/components/EmptyState';
 
 interface Skill {
   id: string;
@@ -359,37 +361,14 @@ const Recommendations = () => {
             {projects.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map((project, index) => (
-                  <Card key={index} className="h-full">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{project.title}</CardTitle>
-                      <div className="flex gap-2">
-                        <Badge variant={project.difficulty === 'Easy' ? 'default' : project.difficulty === 'Medium' ? 'secondary' : 'destructive'}>
-                          {project.difficulty}
-                        </Badge>
-                        <Badge variant="outline">{project.estimatedTime}</Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-gray-600 mb-4">{project.description}</p>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Required Skills:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {project.skills.map((skill: string, skillIndex: number) => (
-                            <Badge key={skillIndex} variant="outline" className="text-xs">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <ProjectCard key={index} project={project} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <Code className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">No project recommendations available. Add some skills to your profile!</p>
-              </div>
+              <EmptyState 
+                icon={Code} 
+                message="No project recommendations available. Add some skills to your profile!" 
+              />
             )}
           </TabsContent>
 
@@ -397,35 +376,14 @@ const Recommendations = () => {
             {companies.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {companies.map((company, index) => (
-                  <Card key={index} className="h-full">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{company.name}</CardTitle>
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">{company.type}</Badge>
-                        {company.hiring && <Badge variant="default">Hiring</Badge>}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-gray-600 mb-4">{company.description}</p>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Looking for skills:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {company.requiredSkills.map((skill: string, skillIndex: number) => (
-                            <Badge key={skillIndex} variant="outline" className="text-xs">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <CompanyCard key={index} company={company} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <Building className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">No company recommendations available. Add some skills to your profile!</p>
-              </div>
+              <EmptyState 
+                icon={Building} 
+                message="No company recommendations available. Add some skills to your profile!" 
+              />
             )}
           </TabsContent>
 
@@ -433,44 +391,14 @@ const Recommendations = () => {
             {leetcodeProblems.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {leetcodeProblems.map((problem, index) => (
-                  <Card key={index} className="h-full">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center justify-between">
-                        {problem.title}
-                        <Badge variant={problem.difficulty === 'Easy' ? 'default' : problem.difficulty === 'Medium' ? 'secondary' : 'destructive'}>
-                          {problem.difficulty}
-                        </Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-gray-600 mb-4">{problem.description}</p>
-                      <div className="space-y-3">
-                        <div>
-                          <p className="text-sm font-medium mb-1">Topics:</p>
-                          <div className="flex flex-wrap gap-1">
-                            {problem.topics.map((topic: string, topicIndex: number) => (
-                              <Badge key={topicIndex} variant="outline" className="text-xs">
-                                {topic}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <Button asChild className="w-full">
-                          <a href={problem.link} target="_blank" rel="noopener noreferrer">
-                            Solve on LeetCode
-                            <ExternalLink className="h-4 w-4 ml-2" />
-                          </a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <LeetCodeCard key={index} problem={problem} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <BookOpen className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">No LeetCode problems available. Add some programming skills to your profile!</p>
-              </div>
+              <EmptyState 
+                icon={BookOpen} 
+                message="No LeetCode problems available. Add some programming skills to your profile!" 
+              />
             )}
           </TabsContent>
         </Tabs>
