@@ -353,6 +353,50 @@ function getPayloadConfigFromPayload(
     : config[key as keyof typeof config]
 }
 
+const formatYAxisTick = (value: number) => {
+  return value.toLocaleString()
+}
+
+const formatXAxisTick = (value: string) => {
+  return value
+}
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border bg-background p-2 shadow-sm">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col">
+            <span className="text-[0.70rem] uppercase text-muted-foreground">
+              {label}
+            </span>
+            <span className="font-bold text-muted-foreground">
+              {payload[0].value}
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  return null
+}
+
+const CustomLegend = ({ payload }: any) => {
+  return (
+    <div className="flex items-center justify-center space-x-6 rounded-lg border bg-background p-2">
+      {payload.map((entry: any, _index: number) => (
+        <div key={entry.value} className="flex items-center space-x-2">
+          <div
+            className="h-3 w-3 rounded-full"
+            style={{ backgroundColor: entry.color }}
+          />
+          <span className="text-sm text-muted-foreground">{entry.value}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export {
   ChartContainer,
   ChartTooltip,

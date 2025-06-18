@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
   base: '/campus-connect-insight/',
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve("./src"),
     },
   },
   build: {

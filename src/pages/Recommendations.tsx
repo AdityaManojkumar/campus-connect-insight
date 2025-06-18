@@ -8,6 +8,7 @@ import ProjectCard from '@/components/ProjectCard';
 import CompanyCard from '@/components/CompanyCard';
 import LeetCodeCard from '@/components/LeetCodeCard';
 import EmptyState from '@/components/EmptyState';
+import { toast } from '@/components/ui/use-toast';
 
 interface Skill {
   id: string;
@@ -36,19 +37,19 @@ const Recommendations = () => {
       return;
     }
 
-    const storedSkills = JSON.parse(localStorage.getItem('skills') || '[]');
-    const storedSubjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+    const skills = JSON.parse(localStorage.getItem('skills') || '[]');
+    const _subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
     
-    console.log('Loaded skills:', storedSkills);
-    console.log('Loaded subjects:', storedSubjects);
+    console.log('Loaded skills:', skills);
+    console.log('Loaded subjects:', _subjects);
     
-    setSkills(storedSkills);
-    setSubjects(storedSubjects);
+    setSkills(skills);
+    setSubjects(_subjects);
     
-    generateRecommendations(storedSkills, storedSubjects);
+    generateRecommendations(skills);
   }, [navigate]);
 
-  const generateRecommendations = (userSkills: Skill[], userSubjects: Subject[]) => {
+  const generateRecommendations = (userSkills: Skill[]) => {
     console.log('Generating recommendations for skills:', userSkills);
     
     // Generate project recommendations based on skills
@@ -313,6 +314,22 @@ const Recommendations = () => {
     }
 
     return matchedProblems.slice(0, 6);
+  };
+
+  const handleViewRecommendations = () => {
+    const skills = JSON.parse(localStorage.getItem('skills') || '[]');
+    const _subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+    
+    if (skills.length === 0) {
+      toast({
+        title: "No Skills Found",
+        description: "Please add some skills first to get recommendations",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    navigate('/recommendations');
   };
 
   return (

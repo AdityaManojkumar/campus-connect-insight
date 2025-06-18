@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -77,7 +76,7 @@ const StudentDetails = () => {
 
   const handleViewRecommendations = () => {
     const skills = JSON.parse(localStorage.getItem('skills') || '[]');
-    const subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
+    const _subjects = JSON.parse(localStorage.getItem('subjects') || '[]');
     
     if (skills.length === 0) {
       toast({
