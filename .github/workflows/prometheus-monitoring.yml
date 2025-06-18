@@ -1,0 +1,32 @@
+name: Prometheus Monitoring Setup
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight
+
+jobs:
+  setup-monitoring:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build and push monitoring stack
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        tags: campus-connect-insight:monitoring
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Deploy monitoring stack
+      run: |
+        echo "Monitoring stack would be deployed here"
+        echo "This is a placeholder for actual deployment logic" 
