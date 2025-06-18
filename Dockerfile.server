@@ -1,0 +1,24 @@
+# Server Dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy server code
+COPY server/ ./server/
+
+# Create .env file
+RUN echo "MONGODB_URI=mongodb://mongodb:27017/campus-connect-insight" > .env && \
+    echo "JWT_SECRET=your-super-secret-jwt-key-change-this-in-production" >> .env && \
+    echo "PORT=5000" >> .env
+
+# Expose port
+EXPOSE 5000
+
+# Start server
+CMD ["npm", "run", "server"] 

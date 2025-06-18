@@ -10,6 +10,36 @@ services:
     restart: unless-stopped
     networks:
       - app-network
+    depends_on:
+      - mongodb
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/campus-connect-insight
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=campus-connect-insight
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    networks:
+      - app-network
 
   prometheus:
     image: prom/prometheus:latest
@@ -46,6 +76,7 @@ services:
 volumes:
   prometheus_data:
   grafana_data:
+  mongodb_data:
 
 networks:
   app-network:
