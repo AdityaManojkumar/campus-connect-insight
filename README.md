@@ -1,32 +1,38 @@
 # Campus Connect Insight
 
-A modern React application for campus insights and analytics with comprehensive CI/CD pipeline.
+A modern React application for campus insights and analytics with a full CI/CD pipeline and MongoDB backend.
 
 ## 🚀 Features
 
 - Modern React with TypeScript
 - Tailwind CSS for styling
-- Comprehensive CI/CD pipeline
-- Docker containerization
+- Comprehensive CI/CD pipeline (GitHub Actions)
+- Docker containerization (frontend, backend, MongoDB, Prometheus, Grafana)
 - SonarCloud code quality analysis
 - Prometheus monitoring
 - Vercel deployment
+- **MongoDB backend with Express API**
+- **JWT authentication**
+- **User registration and login**
 
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 18, TypeScript, Vite
+- **Backend**: Node.js, Express, MongoDB, Mongoose
 - **Styling**: Tailwind CSS, Radix UI
 - **CI/CD**: GitHub Actions
 - **Containerization**: Docker
 - **Code Quality**: SonarCloud
 - **Monitoring**: Prometheus, Grafana
 - **Deployment**: Vercel
+- **Database**: MongoDB
 
 ## 📋 Prerequisites
 
 - Node.js 20+
 - Docker
 - Git
+- MongoDB (local or Atlas)
 
 ## 🚀 Quick Start
 
@@ -43,13 +49,33 @@ A modern React application for campus insights and analytics with comprehensive 
    npm install
    ```
 
-3. **Start development server**
+3. **Set up environment variables**
    ```bash
-   npm run dev
+   cp env.example .env
+   # Edit .env with your MongoDB URI and JWT secret
    ```
 
-4. **Open your browser**
-   Navigate to `http://localhost:5173`
+4. **Start MongoDB** (choose one):
+   ```bash
+   # Option 1: Local MongoDB
+   docker run -d -p 27017:27017 --name mongodb mongo:7.0
+   
+   # Option 2: MongoDB Atlas (update .env with your connection string)
+   ```
+
+5. **Start development servers**
+   ```bash
+   # Start both frontend and backend
+   npm run dev:full
+   
+   # Or start separately:
+   # Terminal 1: npm run server
+   # Terminal 2: npm run dev
+   ```
+
+6. **Open your browser**
+   - Frontend: `http://localhost:5173`
+   - Backend API: `http://localhost:5000`
 
 ### Docker Development
 
@@ -58,8 +84,10 @@ A modern React application for campus insights and analytics with comprehensive 
    docker-compose up --build
    ```
 
-2. **Access the application**
-   - App: `http://localhost:3000`
+2. **Access the services**
+   - Frontend: `http://localhost:3000`
+   - Backend API: `http://localhost:5000`
+   - MongoDB: `localhost:27017`
    - Prometheus: `http://localhost:9090`
    - Grafana: `http://localhost:3001` (admin/admin)
 
@@ -87,6 +115,22 @@ Add the following secrets to your GitHub repository:
 2. Get your deployment tokens and IDs
 3. Add them to GitHub secrets
 
+### 4. MongoDB Setup
+
+#### Local Development
+```bash
+# Using Docker
+docker run -d -p 27017:27017 --name mongodb mongo:7.0
+
+# Or install MongoDB locally
+```
+
+#### Production (MongoDB Atlas)
+1. Create a MongoDB Atlas account
+2. Create a new cluster
+3. Get your connection string
+4. Update environment variables
+
 ## 📊 Monitoring
 
 ### Prometheus Configuration
@@ -96,6 +140,7 @@ The application includes Prometheus monitoring with:
 - Application metrics collection
 - System resource monitoring
 - Custom business metrics
+- MongoDB metrics
 
 ### Grafana Dashboards
 
@@ -105,16 +150,24 @@ Access Grafana at `http://localhost:3001` with:
 
 ## 🐳 Docker
 
-### Build Docker Image
+### Build Docker Images
 
 ```bash
+# Build frontend
 docker build -t campus-connect-insight .
+
+# Build backend
+docker build -f Dockerfile.server -t campus-connect-insight-server .
 ```
 
-### Run Docker Container
+### Run Docker Containers
 
 ```bash
+# Run frontend
 docker run -p 3000:80 campus-connect-insight
+
+# Run backend
+docker run -p 5000:5000 campus-connect-insight-server
 ```
 
 ### Docker Compose
@@ -132,7 +185,9 @@ docker-compose down
 
 ## 📝 Available Scripts
 
-- `npm run dev` - Start development server
+- `npm run dev` - Start frontend development server
+- `npm run server` - Start backend server
+- `npm run dev:full` - Start both frontend and backend
 - `npm run build` - Build for production
 - `npm run lint` - Run ESLint
 - `npm run preview` - Preview production build
@@ -173,16 +228,34 @@ campus-connect-insight/
 │   ├── components/     # React components
 │   ├── pages/         # Page components
 │   ├── hooks/         # Custom hooks
-│   ├── lib/           # Utility functions
+│   ├── lib/           # Utility functions & API
 │   └── main.tsx       # Application entry point
+├── server/
+│   └── index.js       # Express server with MongoDB
 ├── public/            # Static assets
 ├── .github/           # GitHub Actions workflows
-├── Dockerfile         # Docker configuration
+├── Dockerfile         # Frontend Docker configuration
+├── Dockerfile.server  # Backend Docker configuration
 ├── docker-compose.yml # Docker Compose setup
 ├── prometheus.yml     # Prometheus configuration
 ├── vercel.json        # Vercel deployment config
 └── sonar-project.properties # SonarCloud configuration
 ```
+
+## 🔐 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+
+### Student Management
+- `GET /api/student/:userId` - Get student details
+- `POST /api/student` - Save/update student details
+- `PUT /api/student/:userId/skills` - Update skills
+- `PUT /api/student/:userId/subjects` - Update subjects
+
+### Health Check
+- `GET /api/health` - Server health status
 
 ## 🤝 Contributing
 
@@ -207,9 +280,9 @@ If you encounter any issues:
 ## 🔄 CI/CD Pipeline Flow
 
 1. **Code Push/PR** → Triggers GitHub Actions
-2. **Testing** → Runs linting and tests
+2. **Testing** → Runs linting, tests, and server health check
 3. **SonarCloud Analysis** → Code quality checks
-4. **Docker Build** → Creates container image
+4. **Docker Build** → Creates container images
 5. **Vercel Deployment** → Deploys to production
 
 ## 📈 Monitoring Dashboard
@@ -218,4 +291,6 @@ Access monitoring dashboards:
 
 - **Prometheus**: `http://localhost:9090`
 - **Grafana**: `http://localhost:3001`
-- **Application**: `http://localhost:3000`
+- **Frontend**: `http://localhost:3000`
+- **Backend API**: `http://localhost:5000`
+- **MongoDB**: `localhost:27017`
