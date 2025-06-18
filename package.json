@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "echo \"No tests specified\" && exit 0",
     "server": "node server/index.js",
-    "dev:full": "concurrently \"npm run server\" \"npm run dev\""
+    "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
+     "lint": "eslint ."
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
